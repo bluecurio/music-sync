@@ -1,0 +1,87 @@
+iTunesExport Console Application
+http://www.ericdaugherty.com/dev/itunesexport/
+
+Usage
+
+iTunes Export is a command line application that uses the Java Runtime
+Environment (JRE) to execute.  To use it, open a command window to the
+directory where iTunes Export is installed and execute the following command:
+
+java -jar itunesexport.jar
+
+If iTunes Export is run without any parameters, it will attempt to locate
+your iTunes Music Library and will write a .m3u playlist file for each
+playlist defined in the iTunes Music Library.
+
+The location of the iTunes Music Library can be overridden using a command
+line parameter.  Example:
+
+java -jar itunesexport.jar "C:\My Music\iTunes Music Library.xml"
+
+iTunesExport supports a variety of command line parameters.  Use the -? or -h
+parameters to view the available options.  Example:
+
+java -jar itunesexport.jar -h
+
+# ---- documentation from the website ------------------------------------------------------------------------
+
+iTunes Export is a command line application that uses the Java Runtime Environment (JRE) to execute. To use it, extract the downloaded zip file to a directory, open a command window and execute the following command:
+
+java -jar itunesexport.jar
+
+If iTunes Export is run without any parameters, it will attempt to locate your iTunes Music Library and will write a .m3u playlist file for each playlist defined in the iTunes Music Library. You can specify the -? or -h parameters for a list of allowed parameters.
+
+The location of the iTunes Music Library can be overridden using a command line parameter. Example:
+
+java -jar itunesexport.jar -library="C:\My Music\iTunes Music Library.xml"
+
+iTunes Export will write the playlists to the current directory unless an output directory is specified. Example:
+
+java -jar itunesexport.jar -outputDir="c:\My Output Directory"
+
+iTunes Export allows you to export playlists using a variety of formats. By default, playlists are exported at M3U playlists, but you can use the following parameter to change to EXT, WPL, ZPL, or MPL:
+
+java -jar itunesexport.jar -playlistType=WPL
+
+iTunes Export will use the absolute location of your music files in the playlist. iTunes Export accepts a command line parameter that will override this default. Example:
+
+
+java -jar itunesexport.jar -musicPath="c:\My Music Directory"
+
+iTunes Export will only apply the prefix to tracks stored in the directory configured in iTunes as the iTunes Music Folder location. Files stored in a different directory will not have the prefix applied.
+
+If you only wish to override a portion of the music path you can specifi the musicPathOld parameter. iTunes Export will replace this path with the musicPath parameter instead of replacing the default music path.
+
+java -jar itunesexport.jar -musicPathOld="c:\My Old Path"
+
+By default, iTunes Export will exclude the 'built in' playlists, such as Music and Movies. If you want to include these, you can use the includeBuiltInPlaylists option.
+
+java -jar itunexexport.jar -includeBuiltInPlaylists
+
+If you wish to exclude some playlists from the export, you can specify them using the -excludePlaylist command line parameter. This takes a single or list of playlists that will not be exported.
+
+java -jar itunesexport.jar -excludePlaylist="Playlist 1,Playlist 2,Etc"
+
+If you wish to include only a subset of your playlists in the export, you can specify them using the -includePlaylist command line parameter. This takes a single or list of playlists that will be exported.
+
+java -jar itunesexport.jar -includePlaylist="Playlist 1,Playlist 2,Etc"
+
+By default only MP3 files are included in the export. This can be overriden with the -fileTypes paremeter. The values are: ALL, MP3, MP3M4A. MP3M4A includes both MP3 and M4A files.
+
+java -jar itunesexport.jar -fileTypes=ALL
+
+When exporting M3U playlists you can specify the -useM3U8Ext parameter to use the m3u8 extension instead of the default m3u.
+
+In some cases, media players don't treat the contents of M3U files (standard or extended) as Unicode. This causes problems when those files contain international characters. For those media players, changing the playlist file extension to M3U8 prompts the player to treat the contents as Unicode. During testing, this seemed to be the case for playlist files that contained special characters and were being run on a non-English version of Windows. If your playlists contain any special characters () and you're running on an international version of Windows, you may wish to use the -useM3U8Ext parameter.
+
+java -jar itunesexport.jar -useM3U8Ext
+
+iTunes allows you to uncheck (deselect) songs. Be default iTunes Export ignores these songs. You can override this default with the -includeDisabled parameter.
+
+java -jar itunesexport.jar -includeDisabled
+
+You can choose to have iTunes Export copy your music files to an output directory. Three seperate modes are supported. FLAT - Copies all the files into the output directory. ITUNES - Copies the files retaining the iTunes structure (Artist/Album). PLAYLIST - Copies the songs into a folder per playlist.
+
+java -jar itunesexport.jar -copy=FLAT
+
+
