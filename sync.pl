@@ -1,6 +1,20 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
+# --------------------------------------------------------------------------
+#
+#  sync.pl - a script by drenfro to sync music to an android phone w/ssh/rsync
+#
+#
+#
+# TODO
+# 
+# - add a help/usage() method for when the script is run with no options
+# - 
+#
+#
+#
 
 # Modules
+use warnings;
 use strict;
 use File::Copy;
 use File::Basename;
@@ -14,12 +28,6 @@ our $playlist = "";
 our $location = "";
 our $replace = 1;
 our $verbose = 0;
-
-sub error {
-	my ( $error, $retval ) = @_;
-	print STDERR $error . "\n";
-	exit( $retval );
-}
 
 sub verbose {
 	my $message = shift;
@@ -38,25 +46,31 @@ GetOptions(
 );
 
 if ( $help ) {
-	pod2usage( 1 );
+	pod2usage( 3 );
 }
 if ( !$playlist ) {
-	error( "No --playlist given", 1 );
+	print STDERR  "No --playlist given\n\n";
+	pod2usage( 2 );
 }
 if ( !$location ) {
-	error( "No --location given", 1 );
+	print STDERR  "No --location given\n\n";
+	pos2usage( 2 );
 }
 if ( !-e $playlist ) {
-	error( "Bad path for --playlist", 1 );
+	print STDERR  "Bad path for --playlist\n\n";
+	exit( 1 );
 }
 if ( !-e $location ) {
-	error( "Bad path for --location", 1 );
+	print STDERR  "Bad path for --location\n\n";
+	exit( 1 );
 }
 if ( !-d $location ) {
-	error( "The --location path is not a directory", 1 );
+	print STDERR  "The --location path is not a directory\n\n";
+	exit( 1 );
 }
 if ( !-w $location ) {
-	error( "The --location path is not writable!", 1 );
+	print STDERR  "The --location path is not writable!\n\n";
+	exit( 1 );
 }
 
 # Get the name of the playlist - it will be a directory 
@@ -107,11 +121,11 @@ __END__
 
 =head1 NAME
 
-copy_playlist_files.pl - Copy files from a playlist to a location
+sync.pl - Copy files from a playlist to a location
 
 =head1 SYNOPSIS
 
-copy_playlist_files.pl [options] --playlist [path] --location [path]
+sync.pl [options] --playlist [path] --location [path]
 
  Options:
    -p, --playlist     The path to a *.m3u playlist
