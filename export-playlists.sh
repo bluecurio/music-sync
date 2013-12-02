@@ -5,5 +5,5 @@ rm playlists/*
 echo "done"
 
 echo "Extracting new playlists..."
-java  -Xms32m -Xmx2048m -jar itunesexport.jar -outputDir="./playlists";
+java  -Xms32m -Xmx2048m -jar itunesexport.jar -outputDir="./playlists" -fileTypes=ALL -excludePlaylist="Recent Adds";
 echo "done"
