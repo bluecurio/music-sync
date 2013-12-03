@@ -1,5 +1,5 @@
 == MusicSync ==
-A home-rolled music-syncing solution for [mailto:bluecurio@gmail.com Daniel Renfro]'s Galaxy S4. 
+A home-rolled music-syncing solution for [http://www.mediawiki.org/wiki/User:DanielRenfro Daniel Renfro]'s Galaxy S4.
 
 == Description  ==
 This repository is an amalgamation of code that will read an [http://support.apple.com/kb/ht1660 iTunes XML file], output [https://en.wikipedia.org/wiki/M3U .m3u playlist] files (thanks to Eric Daugherty's [http://www.ericdaugherty.com/dev/itunesexport/ iTunes Export] code) and copy them intellegently to a different location. When paired with the amazing [https://play.google.com/store/apps/details?id=com.codesector.droidnas&hl=en Droid NAS Android app], this allows you to put music on your phone the way you want. No more having [http://www.android.com/filetransfer/ Android File Transfer] die mid-transfer or balk at your device, or shell out your hard earned money for a slow, crappy wi-fi syncing program (I'm looking at you [http://www.doubletwist.com/airsync/ AirSync].)
@@ -11,14 +11,14 @@ This repository is an amalgamation of code that will read an [http://support.app
 # Download and install the [https://play.google.com/store/apps/details?id=com.codesector.droidnas&hl=en Droid NAS Android app] on your Android device
 #: Be sure to set it up appropriately. I created a mount-point for the external SD Card (which happens to found at <tt>/storage/extSdCard/</tt> on a Galaxy S4.)
 # Start Droid NAS on your device and mount it on your computer
-# Run ./sync.pl, giving it a playlist (--playlist) to copy over and a place to copy stuff to (--location). 
+# Run ./sync.pl, giving it a playlist (--playlist) to copy over and a place to copy stuff to (--location).
 #: On my MacBook Pro my Galaxy S4's SD Card gets mounted at /Volumes/extSdCard.
 #: Something like <code>./sync.pl --playlist ./playlists/PopMusic.m3u --location /Volumes/extSdCard/Music/</code>
 # Point your favorite media player at the music and enjoy!
 #: You might need to download and install the [https://play.google.com/store/apps/details?id=com.promethyl.force.media.scanner&hl=en Force Media Scan app] to refresh Android's internal media database
 
 == Contact ==
-* [mailto:bluecurio@gmail.com Daniel Renfro]
+* bluecurio@gmail.com &mdash; Daniel Renfro
 
 == License ==
 === iTunes Export ===
