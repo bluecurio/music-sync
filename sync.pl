@@ -93,24 +93,28 @@ verbose( "Music can be found in: $path_to_music\n\n" );
 # Handle the playlist file itself
 my $playlistsDiretory = $location . '/playlists/';
 my $playlistsDiretoryHandle;
-if ( $include_playlist ) {
+if ( $include_playlist && !$debug ) {
 
 	# Create a place to put our playlist
 	if ( ! -d $playlistsDiretory ) {
-		verbose( "mkdir( $playlistsDiretory )\n" );
+		verbose( "Creating playlist directory...$playlistsDiretory\n" );
 		if ( !-d $playlistsDiretory ) {
 			mkdir $playlistsDiretory or die "mkdir failed: $!" unless $debug;
 		}
 		else {
-			verbose( "Found $playlistsDiretory\n" );
+			verbose( "Found playlist directory...$playlistsDiretory\n" );
 		}
 	}
 
 	# Open a filehandle for writing our playlist
 	my ( $root, $directories, $playlistFilename ) = File::Spec->splitpath( $playlist );
 	my $playlistPath = $playlistsDiretory . '/' . $playlistFilename;
-	verbose( "open( \$handle, '>', $playlistPath )\n" );
 	open( $playlistsDiretoryHandle, '>', $playlistPath ) or die "Could not open file for writing: $!";
+
+	# Don't buffer the playlist stream
+	select $playlistsDiretoryHandle;
+	$| = 1;
+	select STDOUT;
 }
 
 # The loop
@@ -136,37 +140,28 @@ while (<$fh>) {
 
 	if ( !$replace ) {
 		my $filePath = $location . $subDirectory;
-		print $filePath . "\n";
-		if ( -e $filePath ) {
-			verbose( "Already found $filePath\n" );  
-			next;
+		if ( ! -e $filePath ) {
+			my $path = $location;
+			foreach my $directory ( @directories ) {
+				next unless $directory;
+				$path .=  "/$directory";
+				if ( !exists $directories_already_made{ $path } ) {
+					if ( !-d $path ) {
+						verbose( "Creating subdirectory...$path\n"  );
+						mkdir $path or die "mkdir failed: $!" unless $debug;
+					}
+					$directories_already_made{ $path } = 1;
+				}
+			}
+			verbose( "Coping $localPath to $path\n" );
+			copy( $localPath, $path ) or die "Copy failed: $!" unless $debug;
 		}
 	}
-
-	my $path = $location;
-	foreach my $directory ( @directories ) {
-		next unless $directory;
-		$path .=  "/$directory";
-		if ( !exists $directories_already_made{ $path } ) {
-			verbose( "Creating subdirectory...mkdir( $path )\n"  );
-			if ( !-d $path ) {
-				mkdir $path or die "mkdir failed: $!" unless $debug;
-			}
-			else {
-				verbose( "Found $path\n" );
-			}
-			$directories_already_made{ $path } = 1;
-		}
-	}
-
-	verbose( "copy( $localPath, $path )\n" );
-	copy( $localPath, $path ) or die "Copy failed: $!" unless $debug;
-
 	if ( $include_playlist ) {
-		print $playlistsDiretoryHandle "$subDirectory/$filename\n";
+		my $line = "../$subDirectory";
+		print $playlistsDiretoryHandle "$line\n";
 	}
-
-	print $filename . "\n";
+	print "$subDirectory\n";
 	sleep 1 if $debug; # for realistic effect :)
 }
 
