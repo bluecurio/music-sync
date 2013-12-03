@@ -1,4 +1,4 @@
-= MusicSync =
+== MusicSync ==
 A home-rolled music-syncing solution for [mailto:bluecurio@gmail.com Daniel Renfro]'s Galaxy S4. 
 
 == Description  ==
@@ -17,9 +17,14 @@ This repository is an amalgamation of code that will read an [http://support.app
 # Point your favorite media player at the music and enjoy!
 #: You might need to download and install the [https://play.google.com/store/apps/details?id=com.promethyl.force.media.scanner&hl=en Force Media Scan app] to refresh Android's internal media database
 
+== Contact ==
+* [mailto:bluecurio@gmail.com Daniel Renfro]
+
 == License ==
 === iTunes Export ===
 Copyright (c) 2003-2009, Eric Daugherty (http://www.ericdaugherty.com) All rights reserved.
 
 === Everything else ===
 [https://www.apache.org/licenses/LICENSE-2.0.txt Apache 2.0]
+
+__NOTOC__
