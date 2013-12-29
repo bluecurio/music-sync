@@ -139,7 +139,7 @@ if ( $playlist ) {
 }
 
 # The list of files to copy over, including directory structure
-my @files_to_copy = ();
+my @files_to_copy;
 if ( $playlist ) {
 	open( my $fh, '<', $playlist ) or die "Cannot read $playlist:$!";
 	while ( <$fh> ) {
@@ -156,7 +156,6 @@ if ( $directory_to_copy ) {
 	while ( readdir $dh ) {
 		next if /^\./;
 		my $path = "$directory_to_copy/$_";
-		next if !-f $path;
 		push @files_to_copy, $path;
 	}
 	close( $dh );
@@ -202,7 +201,7 @@ foreach my $_ ( @files_to_copy ) {
 			}
 		}
 		verbose( "Coping $localPath to $path\n" );
-		copy( $localPath, $path ) or die "Copy failed: $!" unless $debug;
+		copy( $localPath, $path ) or die "Copy failed: $!";
 		print "Copied $subDirectory\n";
 	}
 	else {
