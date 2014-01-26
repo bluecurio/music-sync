@@ -10,6 +10,7 @@ use warnings;
 use strict;
 use File::Copy;
 use File::Spec;
+use Carp;
 use Env qw/ HOME /;
 use Cwd;
 use Getopt::Long;
@@ -54,11 +55,11 @@ if ( $help ) {
 	pod2usage( 3 );
 }
 if ( !$playlist && !$directory_to_copy ) {
-	print STDERR  "No --playlist or --directory given\n\n";
+	croak  "No --playlist or --directory given\n\n";
 	pod2usage( 2 );
 }
 if ( !$location ) {
-	print STDERR  "No --location given\n\n";
+	croak  "No --location given\n\n";
 	pos2usage( 2 );
 }
 else {
@@ -67,37 +68,37 @@ else {
 	}
 }
 if ( $playlist && $directory_to_copy ) {
-	print STDERR "Please set --playlist or --directory, but not both\n\n";
+	croak "Please set --playlist or --directory, but not both\n\n";
 	pod2usage( 2 );
 }
 if ( $playlist && !-e $playlist ) {
-	print STDERR  "Bad path for --playlist\n\n";
+	croak  "Bad path for --playlist\n\n";
 	exit( 1 );
 }
 if ( $directory_to_copy ) {
 	if ( !-d $directory_to_copy ) {
-		print STDERR "The path for --directory is not a directory\n\n";
+		croak "The path for --directory is not a directory\n\n";
 		exit( 1 );
 	}
 	if ( !-R $directory_to_copy ) {
-		print STDERR "The path for --directory is not a readable\n\n";
+		croak "The path for --directory is not a readable\n\n";
 		exit( 1 );
 	}
 }
 if ( !-e $location ) {
-	print STDERR  "Bad path for --location\n\n";
+	croak  "Bad path for --location\n\n";
 	exit( 1 );
 }
 if ( !-d $location ) {
-	print STDERR  "The --location path is not a directory\n\n";
+	croak  "The --location path is not a directory\n\n";
 	exit( 1 );
 }
 if ( !-w $location ) {
-	print STDERR  "The --location path is not writable!\n\n";
+	croak  "The --location path is not writable!\n\n";
 	exit( 1 );
 }
 if ( !-d $path_to_music ) {
-	print STDERR "The local iTunes music path (\"$path_to_music\") is invalid!\n\n";
+	croak "The local iTunes music path (\"$path_to_music\") is invalid!\n\n";
 	exit( 1 );
 }
 
@@ -150,71 +151,84 @@ if ( $playlist ) {
 		push @files_to_copy, $_;
 	}
 	close( $fh );
-}
-if ( $directory_to_copy ) {
-	opendir( my $dh, $directory_to_copy );
-	while ( readdir $dh ) {
-		next if /^\./;
-		my $path = "$directory_to_copy/$_";
-		push @files_to_copy, $path;
-	}
-	close( $dh );
-}
 
 # The loop
-my %directories_already_made;
-foreach my $_ ( @files_to_copy ) {
-	chomp;
+	my %directories_already_made;
+	foreach my $_ ( @files_to_copy ) {
+		chomp;
 
-	# The line from the playlist, a path to our local file
-	my $localPath = $_;
+		# The line from the playlist, a path to our local file
+		my $localPath = $_;
 
-	# The path structure that we need to mirror on the device
-	my $subDirectory = $localPath;
-	$subDirectory =~ s/^$path_to_music//;
+		# The path structure that we need to mirror on the device
+		my $subDirectory = $localPath;
+		$subDirectory =~ s/^$path_to_music//;
 
-	# Break up the directory structure into managable pieces
-	my ( $root, $directories, $filename ) = File::Spec->splitpath( $subDirectory );
-	my @directories = ();
-	if ( $directories ) {
-		@directories = File::Spec->splitdir( $directories );
-	}
-
-	# The path to the mirrored directory structure
-	my $filePath = $location . $subDirectory;
-
-	# Helps find files when the cache is stale or over SSHFS/SMB
-	#my  ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat $filePath;
-	stat $filePath;
-
-	if ( !-e $filePath || $replace ) {
-		my $path = $location;
-		foreach my $directory ( @directories ) {
-			next unless $directory;
-			$path .=  "/$directory";
-			if ( !exists $directories_already_made{ $path } ) {
-				if ( !-d $path ) {
-					verbose( "Creating subdirectory...$path\n"  );
-					mkdir $path or die "mkdir failed: $!" unless $debug;
-				}
-				$directories_already_made{ $path } = 1;
-			}
+		# Break up the directory structure into managable pieces
+		my ( $root, $directories, $filename ) = File::Spec->splitpath( $subDirectory );
+		my @directories = ();
+		if ( $directories ) {
+			@directories = File::Spec->splitdir( $directories );
 		}
-		verbose( "Coping $localPath to $path\n" );
-		copy( $localPath, $path ) or die "Copy failed: $!";
-		print "Copied $subDirectory\n";
-	}
-	else {
-		print "Found $subDirectory\n";
-	}
-	if ( !$debug && $playlist && $include_playlist ) {
-		my $line = "../$subDirectory";
-		print $playlistsDiretoryHandle "$line\n";
-	}
-	sleep 1 if $debug; # for realistic effect :)
-}
 
-close( $playlistsDiretoryHandle ) if $playlist && $include_playlist;
+		# The path to the mirrored directory structure
+		my $filePath = $location . $subDirectory;
+
+		# Helps find files when the cache is stale or over SSHFS/SMB
+		#my  ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat $filePath;
+		stat $filePath;
+
+		if ( !-e $filePath || $replace ) {
+			my $path = $location;
+			foreach my $directory ( @directories ) {
+				next unless $directory;
+				$path .=  "/$directory";
+				if ( !exists $directories_already_made{ $path } ) {
+					if ( !-d $path ) {
+						verbose( "Creating subdirectory...$path\n"  );
+						mkdir $path or die "mkdir failed: $!" unless $debug;
+					}
+					$directories_already_made{ $path } = 1;
+				}
+			}
+			verbose( "Coping $localPath to $path\n" );
+			copy( $localPath, $path ) or die "Copy failed: $!";
+			print "Copied $subDirectory\n";
+		}
+		else {
+			print "Found $subDirectory\n";
+		}
+		if ( !$debug && $playlist && $include_playlist ) {
+			my $line = "../$subDirectory";
+			print $playlistsDiretoryHandle "$line\n";
+		}
+		sleep 1 if $debug; # for realistic effect :)
+	}
+
+	close( $playlistsDiretoryHandle ) if $playlist && $include_playlist;
+}
+if ( $directory_to_copy ) {
+	
+	chomp( my $rsync = (`which rsync`)[0]);
+	if ( !$rsync ) {
+		croak "Could not find rsync";
+	}
+
+	my $command = sprintf(
+		'%s --verbose --recursive --times --update --prune-empty-dirs "%s" "%s"',
+		$rsync,
+		$directory_to_copy,
+		$location
+	);
+	if ( $verbose ) {
+		print $command . "\n";
+	}
+	my $retval = system( $command );
+	if ( $retval ) {
+		croak "rsync failed: $!";
+	}
+
+}
 
 __END__
 
